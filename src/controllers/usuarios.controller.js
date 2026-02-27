@@ -3,22 +3,25 @@ const { validationResult } = require('express-validator');
 const usuariosModel = require('../models/usuarios.model');
 const { success } = require('../helpers/response.helper');
 
-exports.crearUsuario = (req, res) => {
+exports.crearUsuario = (req, res, next) => {
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errores: errors.array() });
+        const error = new Error("Datos inválidos");
+        error.status = 400;
+        return next(error);
     }
 
     const { nombre, edad } = req.body;
 
-    usuariosModel.crear(nombre, edad, (err, result) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: "Error al insertar usuario" });
-        }
+    // 🔥 usuario autenticado desde JWT
+    const userId = req.user.id;
+
+    usuariosModel.crear(nombre, edad, userId, (err, result) => {
+        if (err) return next(err);
 
         success(res, {
-        id: result.insertId,
+            id: result.insertId,
             nombre,
             edad
         }, 201);
@@ -26,7 +29,7 @@ exports.crearUsuario = (req, res) => {
 };
 
 exports.obtenerUsuarios = (req, res) => {
-
+    console.log("Usuario autenticado:", req.user);
     usuariosModel.obtenerTodos((err, results) => {
         if (err) {
             console.error(err);

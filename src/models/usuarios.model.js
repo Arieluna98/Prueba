@@ -1,9 +1,9 @@
 const connection = require('../config/db');
 
 // CREATE
-exports.crear = (nombre, edad, callback) => {
-    const sql = 'INSERT INTO usuarios (nombre, edad) VALUES (?, ?)';
-    connection.query(sql, [nombre, edad], callback);
+exports.crear = (nombre, edad, userId, callback) => {
+    const sql = 'INSERT INTO usuarios (nombre, edad, user_id) VALUES (?, ?, ?)';
+    connection.query(sql, [nombre, edad, userId], callback);
 };
 
 // READ
