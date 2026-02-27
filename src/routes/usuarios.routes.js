@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
-
+const authMiddleware = require('../middleware/auth.middleware');
 const usuariosController = require('../controllers/usuarios.controller');
 
 // CREATE
 router.post(
     '/',
+    authMiddleware,
     [
         body('nombre')
             .notEmpty().withMessage('El nombre es obligatorio')
@@ -19,11 +20,12 @@ router.post(
 );
 
 // READ
-router.get('/', usuariosController.obtenerUsuarios);
+router.get('/', authMiddleware, usuariosController.obtenerUsuarios);
 
 // UPDATE
 router.put(
     '/:id',
+    authMiddleware,
     [
         body('nombre')
             .notEmpty().withMessage('El nombre es obligatorio')
@@ -36,6 +38,6 @@ router.put(
 );
 
 // DELETE
-router.delete('/:id', usuariosController.eliminarUsuario);
+router.delete('/:id', authMiddleware, usuariosController.eliminarUsuario);
 
 module.exports = router;
